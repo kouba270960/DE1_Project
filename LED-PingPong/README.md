@@ -17,13 +17,13 @@ The ball is represented by a moving LED across the 16 onboard LEDs. The players 
 - Left and right player button input
 - Ball direction change after a successful hit
 - Miss detection
-- Flashing LEDs after losing a round
 - Reset/start logic
 
 ## Hardware
 - Nexys A7-50T
 - 16 onboard LEDs
 - Push buttons
+- 7 segment display
 
 ## Project structure
 - `src/` – VHDL source files
