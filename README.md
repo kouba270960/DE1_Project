@@ -45,7 +45,7 @@ The goal is to create a reaction game using the 16 onboard LEDs and push buttons
 
 ## Components and their testbenches
 
-# display_driver
+### display_driver
 
 - This component is used to display players score and difficulty level. It takes 32 bit input data vector, which is splited between individual displays. Input signal an_enable enables individual displays and is active-low.
 - Input data vactor is split by four bits per display, using 8 individual displays.
