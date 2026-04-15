@@ -1,0 +1,51 @@
+Celkový princip hry
+
+Hra je realizována pomocí 16 LED a 5 tlačítek na vývojové desce Nexys A7-50T. Jedna rozsvícená LED představuje míček, který se pohybuje z jedné strany na druhou. Levý a pravý hráč se snaží míček odrazit ve správný okamžik pomocí svých tlačítek. Pokud hráč nestiskne tlačítko včas, míček přeteče mimo herní pole a bod získá protihráč. Aktuální skóre se zobrazuje na sedmisegmentovém displeji.
+
+Použitá tlačítka
+
+- btnl: tlačítko levého hráče
+- btnr: tlačítko pravého hráče
+- btnu: zvýšení rychlosti míčku
+- btnd: snížení rychlosti míčku
+- btnc/rst: reset hry
+
+Debounce bloky
+
+Na vstupu jsou použity debounce bloky, které slouží k odstranění zákmitů tlačítek. Díky tomu se do další logiky neposílají falešné impulzy a každý stisk tlačítka je vyhodnocen korektně. Debounce je použit pro hráčská tlačítka i pro ovládání rychlosti.
+
+Blok cnt_b_bd
+
+Blok cnt_b_bd je binární čítač, který slouží k nastavení rychlosti hry. Je ovládán tlačítky btnu a btnd, kterými se rychlost zvyšuje nebo snižuje. Výstup tohoto čítače je přiveden do bloku clk_en, kde ovlivňuje rychlost posunu míčku. Současně se jeho hodnota používá také pro zobrazení na displeji, aby bylo možné vidět aktuální nastavení rychlosti nebo řídicí hodnoty hry.
+
+Blok clk_en
+
+Blok clk_en vytváří clock enable impulzy pro hlavní pohyb míčku. Neřídí samotný směr pohybu, ale určuje, jak rychle bude docházet k posunu míčku po LED. Perioda těchto impulzů závisí na hodnotě z bloku cnt_b_bd. Tím je možné během hry měnit rychlost pohybu míčku.
+
+Blok cnt_d_bd
+
+Blok cnt_d_bd představuje hlavní čítač nebo pohybový blok míčku. Je řízen impulzy z clk_en a určuje aktuální pozici míčku v herním poli. Jeho hlavní výstup je LED(15:0), který přímo zobrazuje pozici míčku na šestnácti LED.
+
+Další důležité výstupy tohoto bloku jsou signály count 18, count 17, count 2 a count 1. Tyto signály tvoří zpětnou vazbu přes hradla a slouží k tomu, aby bylo možné odrazit míček pouze na koncích herního pole, tedy na první nebo poslední LED. Díky tomu lze správně omezit odraz pouze na krajní pozice.
+
+Blok cnt_d_bd má také výstupy count 19 a count 0, které představují přetečení. Pokud míček přejde mimo levou nebo pravou stranu herního pole, znamená to, že hráč nestiskl tlačítko včas. V takovém případě se vyhodnotí ztráta výměny a bod získá druhý hráč.
+
+Logika odrazu
+
+Levý hráč používá tlačítko btnl a pravý hráč tlačítko btnr. Hráč může míček odrazit pouze tehdy, když se míček nachází na příslušném kraji LED pole. Zpětnovazební signály z cnt_d_bd spolu s hradly zajišťují, že odraz nebude možný uprostřed herního pole, ale pouze na správné krajní pozici. Pokud hráč stiskne správné tlačítko včas, změní se směr pohybu míčku.
+
+Bloky cnt_8bit
+
+Ve schématu jsou dva bloky cnt_8bit. Tyto bloky slouží jako čítače bodů pro hráče 1 a hráče 2. Pokud dojde k přetečení míčku na jedné straně, bod se připíše protihráči. Každý z těchto čítačů tedy uchovává aktuální skóre jednoho hráče.
+
+Blok sig_data
+
+Blok sig_data slouží ke zpracování dat pro displej. Na jeho vstup přicházejí hodnoty z obou čítačů cnt_8bit. Tento blok připravuje správný datový formát pro display driver, aby se body obou hráčů zobrazovaly správně na sedmisegmentovém displeji.
+
+Blok display_driver
+
+Blok display_driver přijímá na vstupu data ze sig_data, tedy hodnoty, které mají být zobrazeny. Dále dostává signál sig_an_en(7:0), který určuje, které číslice displeje mají být aktivní a které mají zůstat zhasnuté. Na výstupu generuje signál seg, který určuje rozsvícené segmenty jednotlivých číslic, a signál anode, který vybírá, která číslice displeje právě svítí. Tento blok tedy zajišťuje správné zobrazení skóre hráčů.
+
+Shrnutí funkce celé hry
+
+Po resetu se hra nastaví do výchozího stavu. Rychlost pohybu míčku je řízena pomocí btnu a btnd přes blok cnt_b_bd a clk_en. Míček se pohybuje po 16 LED a hráči jej odrážejí tlačítky btnl a btnr. Odraz je povolen pouze na krajních LED. Pokud hráč nestihne míček odrazit, dojde k přetečení, soupeř získá bod a tento bod se uloží do příslušného čítače cnt_8bit. Skóre je následně zobrazeno pomocí bloků sig_data a display_driver na sedmisegmentovém displeji.
