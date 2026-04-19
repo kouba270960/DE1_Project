@@ -29,6 +29,21 @@ The goal is to create a reaction game using the 16 onboard LEDs and push buttons
 - 16 onboard LEDs
 - Push buttons
 
+## I/O Ports
+
+| Port | Direction | Width | Description |
+| --- | --- | ---: | --- |
+| `clk` | input | 1 | Main clock signal from the Nexys A7-50T board. |
+| `btnc` | input | 1 | Center button used as reset (`rst`). |
+| `btnl` | input | 1 | Left player button used to return the ball on the left side. |
+| `btnr` | input | 1 | Right player button used to return the ball on the right side. |
+| `btnu` | input | 1 | Button for increasing the ball speed. |
+| `btnd` | input | 1 | Button for decreasing the ball speed. |
+| `led` | output | 16 | LED output showing the current ball position. |
+| `seg` | output | 7 | Seven-segment display segment control signals. |
+| `an` | output | 8 | Seven-segment display anode selection signals. |
+| `dp` | output | 1 | Decimal point output, unused in the game and kept inactive. |
+
 ## Repository Structure
 
 - `src/` VHDL source files
