@@ -37,6 +37,10 @@ architecture Behavioral of PingPong_top is
     signal sig_right_window  : std_logic;
     signal sig_left_hit      : std_logic;
     signal sig_right_hit     : std_logic;
+    signal sig_count19_prev  : std_logic := '0';
+    signal sig_count0_prev   : std_logic := '0';
+    signal sig_left_score_en : std_logic := '0';
+    signal sig_right_score_en: std_logic := '0';
     signal sig_left_score    : std_logic_vector(7 downto 0);
     signal sig_right_score   : std_logic_vector(7 downto 0);
     signal sig_display_data  : std_logic_vector(31 downto 0);
@@ -114,37 +118,50 @@ begin
     sig_left_window <= sig_count(1) or sig_count(2);
     sig_right_window <= sig_count(17) or sig_count(18);
 
-    sig_left_hit <= sig_btnl_press and sig_left_window;
-    sig_right_hit <= sig_btnr_press and sig_right_window;
+    sig_left_hit <= sig_left_bounce and sig_left_window;
+    sig_right_hit <= sig_right_bounce and sig_right_window;
 
     p_direction_latch : process (clk) is
     begin
         if rising_edge(clk) then
             if sig_rst = '1' then
                 sig_dir <= '1';
-            elsif sig_left_hit = '1' then
-                sig_dir <= '1';
-            elsif sig_right_hit = '1' then
-                sig_dir <= '0';
-            elsif sig_count(19) = '1' then
-                sig_dir <= '0';
-            elsif sig_count(0) = '1' then
-                sig_dir <= '1';
+                sig_count19_prev <= '0';
+                sig_count0_prev <= '0';
+                sig_left_score_en <= '0';
+                sig_right_score_en <= '0';
+            else
+                sig_count19_prev <= sig_count(19);
+                sig_count0_prev <= sig_count(0);
+                sig_left_score_en <= sig_count(19) and not sig_count19_prev;
+                sig_right_score_en <= sig_count(0) and not sig_count0_prev;
+
+                if sig_left_hit = '1' then
+                    sig_dir <= '1';
+                elsif sig_right_hit = '1' then
+                    sig_dir <= '0';
+                elsif sig_count(19) = '1' then
+                    sig_dir <= '0';
+                elsif sig_count(0) = '1' then
+                    sig_dir <= '1';
+                end if;
             end if;
         end if;
     end process p_direction_latch;
 
     left_score_counter : entity work.cnt_8bit
         port map (
+            clk   => clk,
             rst   => sig_rst,
-            count => sig_count(19),
+            count => sig_left_score_en,
             outp  => sig_left_score
         );
 
     right_score_counter : entity work.cnt_8bit
         port map (
+            clk   => clk,
             rst   => sig_rst,
-            count => sig_count(0),
+            count => sig_right_score_en,
             outp  => sig_right_score
         );
 
