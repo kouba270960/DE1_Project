@@ -37,8 +37,6 @@ architecture Behavioral of PingPong_top is
     signal sig_right_window  : std_logic;
     signal sig_left_hit      : std_logic;
     signal sig_right_hit     : std_logic;
-    signal sig_left_request  : std_logic := '0';
-    signal sig_right_request : std_logic := '0';
     signal sig_count19_prev  : std_logic := '0';
     signal sig_count0_prev   : std_logic := '0';
     signal sig_left_score_en : std_logic := '0';
@@ -117,19 +115,17 @@ begin
             count   => sig_count
         );
 
-    sig_left_window <= sig_count(1) or sig_count(2);
-    sig_right_window <= sig_count(17) or sig_count(18);
+    sig_left_window <= sig_count(2);
+    sig_right_window <= sig_count(17);
 
-    sig_left_hit <= (sig_left_request or sig_btnl_press or sig_left_bounce) and sig_left_window;
-    sig_right_hit <= (sig_right_request or sig_btnr_press or sig_right_bounce) and sig_right_window;
+    sig_left_hit <= sig_btnl_press and sig_left_window;
+    sig_right_hit <= sig_btnr_press and sig_right_window;
 
     p_direction_latch : process (clk) is
     begin
         if rising_edge(clk) then
             if sig_rst = '1' then
                 sig_dir <= '1';
-                sig_left_request <= '0';
-                sig_right_request <= '0';
                 sig_count19_prev <= '0';
                 sig_count0_prev <= '0';
                 sig_left_score_en <= '0';
@@ -140,26 +136,14 @@ begin
                 sig_left_score_en <= sig_count(19) and not sig_count19_prev;
                 sig_right_score_en <= sig_count(0) and not sig_count0_prev;
 
-                if sig_btnl_press = '1' then
-                    sig_left_request <= '1';
-                end if;
-
-                if sig_btnr_press = '1' then
-                    sig_right_request <= '1';
-                end if;
-
                 if sig_left_hit = '1' then
                     sig_dir <= '1';
-                    sig_left_request <= '0';
                 elsif sig_right_hit = '1' then
                     sig_dir <= '0';
-                    sig_right_request <= '0';
                 elsif sig_count(19) = '1' then
                     sig_dir <= '0';
-                    sig_right_request <= '0';
                 elsif sig_count(0) = '1' then
                     sig_dir <= '1';
-                    sig_left_request <= '0';
                 end if;
             end if;
         end if;
