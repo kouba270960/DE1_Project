@@ -37,6 +37,8 @@ architecture Behavioral of PingPong_top is
     signal sig_right_window  : std_logic;
     signal sig_left_hit      : std_logic;
     signal sig_right_hit     : std_logic;
+    signal sig_left_request  : std_logic := '0';
+    signal sig_right_request : std_logic := '0';
     signal sig_count19_prev  : std_logic := '0';
     signal sig_count0_prev   : std_logic := '0';
     signal sig_left_score_en : std_logic := '0';
@@ -53,7 +55,7 @@ begin
         port map (
             clk       => clk,
             rst       => sig_rst,
-            btn_in    => btnl,
+            btn_in    => btnr,
             btn_state => sig_left_bounce,
             btn_press => sig_btnl_press
         );
@@ -62,7 +64,7 @@ begin
         port map (
             clk       => clk,
             rst       => sig_rst,
-            btn_in    => btnr,
+            btn_in    => btnl,
             btn_state => sig_right_bounce,
             btn_press => sig_btnr_press
         );
@@ -118,14 +120,16 @@ begin
     sig_left_window <= sig_count(1) or sig_count(2);
     sig_right_window <= sig_count(17) or sig_count(18);
 
-    sig_left_hit <= sig_left_bounce and sig_left_window;
-    sig_right_hit <= sig_right_bounce and sig_right_window;
+    sig_left_hit <= (sig_left_request or sig_btnl_press or sig_left_bounce) and sig_left_window;
+    sig_right_hit <= (sig_right_request or sig_btnr_press or sig_right_bounce) and sig_right_window;
 
     p_direction_latch : process (clk) is
     begin
         if rising_edge(clk) then
             if sig_rst = '1' then
                 sig_dir <= '1';
+                sig_left_request <= '0';
+                sig_right_request <= '0';
                 sig_count19_prev <= '0';
                 sig_count0_prev <= '0';
                 sig_left_score_en <= '0';
@@ -136,14 +140,26 @@ begin
                 sig_left_score_en <= sig_count(19) and not sig_count19_prev;
                 sig_right_score_en <= sig_count(0) and not sig_count0_prev;
 
+                if sig_btnl_press = '1' then
+                    sig_left_request <= '1';
+                end if;
+
+                if sig_btnr_press = '1' then
+                    sig_right_request <= '1';
+                end if;
+
                 if sig_left_hit = '1' then
                     sig_dir <= '1';
+                    sig_left_request <= '0';
                 elsif sig_right_hit = '1' then
                     sig_dir <= '0';
+                    sig_right_request <= '0';
                 elsif sig_count(19) = '1' then
                     sig_dir <= '0';
+                    sig_right_request <= '0';
                 elsif sig_count(0) = '1' then
                     sig_dir <= '1';
+                    sig_left_request <= '0';
                 end if;
             end if;
         end if;
@@ -165,11 +181,11 @@ begin
             outp  => sig_right_score
         );
 
-    sig_display_data(31 downto 24) <= sig_left_score;
+    sig_display_data(31 downto 24) <= sig_right_score;
     sig_display_data(23 downto 15) <= (others => '0');
     sig_display_data(14 downto 12) <= sig_speed;
     sig_display_data(11 downto 8)  <= (others => '0');
-    sig_display_data(7 downto 0)   <= sig_right_score;
+    sig_display_data(7 downto 0)   <= sig_left_score;
 
     display : entity work.display_driver
         port map (
