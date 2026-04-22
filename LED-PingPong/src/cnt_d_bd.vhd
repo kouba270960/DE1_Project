@@ -9,18 +9,13 @@ entity cnt_d_bd is
         rst     : in  std_logic;
 
         led     : out std_logic_vector(15 downto 0);
-
-        count18 : out std_logic;
-        count17 : out std_logic;
-        count2  : out std_logic;
-        count1  : out std_logic;
-        count19 : out std_logic;
-        count0  : out std_logic
+        count   : out std_logic_vector(19 downto 0)
     );
 end cnt_d_bd;
 
 architecture Behavioral of cnt_d_bd is
     signal pos : integer range 0 to 19 := 2;
+    signal sig_count : std_logic_vector(19 downto 0);
 begin
 
     -- hlavní čítač pozice
@@ -47,13 +42,16 @@ begin
         end if;
     end process;
 
-    -- indikace konkrétních stavů
-    count0  <= '1' when pos = 0  else '0';
-    count1  <= '1' when pos = 1  else '0';
-    count2  <= '1' when pos = 2  else '0';
-    count17 <= '1' when pos = 17 else '0';
-    count18 <= '1' when pos = 18 else '0';
-    count19 <= '1' when pos = 19 else '0';
+    -- indikace pozice jako one-hot vektor
+    process(pos)
+        variable tmp : std_logic_vector(19 downto 0);
+    begin
+        tmp := (others => '0');
+        tmp(pos) := '1';
+        sig_count <= tmp;
+    end process;
+
+    count <= sig_count;
 
     -- převod pozice na LED(15:0)
     -- stav 2..17 odpovídá 16 LED

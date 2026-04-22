@@ -42,7 +42,6 @@ The goal is to create a reaction game using the 16 onboard LEDs and push buttons
 | `led` | output | 16 | LED output showing the current ball position. |
 | `seg` | output | 7 | Seven-segment display segment control signals. |
 | `an` | output | 8 | Seven-segment display anode selection signals. |
-| `dp` | output | 1 | Decimal point output, unused in the game and kept inactive. |
 
 ## Repository Structure
 

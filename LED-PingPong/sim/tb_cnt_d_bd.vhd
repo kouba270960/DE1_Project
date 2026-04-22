@@ -13,12 +13,7 @@ architecture tb of tb_cnt_d_bd is
             step    : in  std_logic;
             rst     : in  std_logic;
             led     : out std_logic_vector(15 downto 0);
-            count18 : out std_logic;
-            count17 : out std_logic;
-            count2  : out std_logic;
-            count1  : out std_logic;
-            count19 : out std_logic;
-            count0  : out std_logic
+            count   : out std_logic_vector(19 downto 0)
         );
     end component;
 
@@ -28,12 +23,7 @@ architecture tb of tb_cnt_d_bd is
     signal rst     : std_logic := '0';
 
     signal led     : std_logic_vector(15 downto 0);
-    signal count18 : std_logic;
-    signal count17 : std_logic;
-    signal count2  : std_logic;
-    signal count1  : std_logic;
-    signal count19 : std_logic;
-    signal count0  : std_logic;
+    signal count   : std_logic_vector(19 downto 0);
 
 begin
 
@@ -46,12 +36,7 @@ begin
             step    => step,
             rst     => rst,
             led     => led,
-            count18 => count18,
-            count17 => count17,
-            count2  => count2,
-            count1  => count1,
-            count19 => count19,
-            count0  => count0
+            count   => count
         );
 
     stimuli : process
