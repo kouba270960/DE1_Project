@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 
 entity cnt_d_bd is
     port (
+        clk     : in  std_logic;
         u_d     : in  std_logic;  -- '1' = doprava, '0' = doleva
         step    : in  std_logic;  -- posun o 1 krok
         rst     : in  std_logic;
@@ -23,22 +24,24 @@ architecture Behavioral of cnt_d_bd is
 begin
 
     -- hlavní čítač pozice
-    process(step, rst)
+    process(clk)
     begin
-        if rst = '1' then
-            pos <= 2;  -- start na levém kraji herního pole
-        elsif rising_edge(step) then
-            if u_d = '1' then
-                if pos < 19 then
-                    pos <= pos + 1;
+        if rising_edge(clk) then
+            if rst = '1' then
+                pos <= 2;  -- start na levém kraji herního pole
+            elsif step = '1' then
+                if u_d = '1' then
+                    if pos < 19 then
+                        pos <= pos + 1;
+                    else
+                        pos <= 19;
+                    end if;
                 else
-                    pos <= 19;
-                end if;
-            else
-                if pos > 0 then
-                    pos <= pos - 1;
-                else
-                    pos <= 0;
+                    if pos > 0 then
+                        pos <= pos - 1;
+                    else
+                        pos <= 0;
+                    end if;
                 end if;
             end if;
         end if;

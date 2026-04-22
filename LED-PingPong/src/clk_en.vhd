@@ -1,7 +1,10 @@
-  library ieee;
+library ieee;
 use ieee.std_logic_1164.all;
 
 entity clk_en is
+    generic (
+        G_BASE_COUNT : positive := 10
+    );
     port (
         clk     : in  std_logic;
         cnt_set : in  std_logic_vector(2 downto 0);
@@ -11,21 +14,21 @@ entity clk_en is
 end clk_en;
 
 architecture Behavioral of clk_en is
-    signal sig_cnt : integer range 0 to 9 := 0;
-    signal max_cnt : integer range 1 to 9 := 9;
+    signal sig_cnt : natural range 0 to G_BASE_COUNT * 16 := 0;
+    signal max_cnt : natural range 1 to G_BASE_COUNT * 16 := G_BASE_COUNT * 16;
 begin
 
     process(cnt_set)
     begin
         case cnt_set is
-            when "000" => max_cnt <= 9;
-            when "001" => max_cnt <= 8;
-            when "010" => max_cnt <= 7;
-            when "011" => max_cnt <= 6;
-            when "100" => max_cnt <= 5;
-            when "101" => max_cnt <= 4;
-            when "110" => max_cnt <= 3;
-            when others => max_cnt <= 2;
+            when "000" => max_cnt <= G_BASE_COUNT * 16;
+            when "001" => max_cnt <= G_BASE_COUNT * 12;
+            when "010" => max_cnt <= G_BASE_COUNT * 9;
+            when "011" => max_cnt <= G_BASE_COUNT * 7;
+            when "100" => max_cnt <= G_BASE_COUNT * 5;
+            when "101" => max_cnt <= G_BASE_COUNT * 4;
+            when "110" => max_cnt <= G_BASE_COUNT * 3;
+            when others => max_cnt <= G_BASE_COUNT * 2;
         end case;
     end process;
 
