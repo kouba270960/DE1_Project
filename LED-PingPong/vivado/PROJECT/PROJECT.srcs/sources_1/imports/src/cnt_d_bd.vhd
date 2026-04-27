@@ -26,7 +26,7 @@ begin
     process(step, rst)
     begin
         if rst = '1' then
-            pos <= 2;  -- start na levém kraji herního pole
+            pos <= 10;  -- start na uprostřed herního pole
         elsif rising_edge(step) then
             if u_d = '1' then
                 if pos < 19 then

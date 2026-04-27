@@ -111,7 +111,6 @@ architecture Behavioral of PingPong_top is
 
 --                      Signals
 ---------------------------------------------------------------------------------------------------------------
-    signal sig_rst           : std_logic;                           --obsolete?
     signal sig_btnl_press    : std_logic;
     signal sig_btnr_press    : std_logic;
     signal sig_btnu_press    : std_logic;
@@ -124,22 +123,20 @@ architecture Behavioral of PingPong_top is
     signal sig_left_score    : unsigned(3 downto 0) := (others => '0');
     signal sig_right_score   : unsigned(3 downto 0) := (others => '0');
     signal sig_display_data  : std_logic_vector(31 downto 0);
-    signal btn_states        : std_logic_vector(3 downto 0);
 
-    signal player1CntCarry   : std_logic;
-    signal player2CntCarry   : std_logic;
+    signal sig_player1CntCarry   : std_logic;
+    signal sig_player2CntCarry   : std_logic;
 
-    signal player1ScoreL     : std_logic_vector(3 downto 0);
-    signal player1ScoreH     : std_logic_vector(3 downto 0);
+    signal sig_player1ScoreL     : std_logic_vector(3 downto 0);
+    signal sig_player1ScoreH     : std_logic_vector(3 downto 0);
 
-    signal player2ScoreL     : std_logic_vector(3 downto 0);
-    signal player2ScoreH     : std_logic_vector(3 downto 0);
+    signal sig_player2ScoreL     : std_logic_vector(3 downto 0);
+    signal sig_player2ScoreH     : std_logic_vector(3 downto 0);
 
 
 
 begin
 
-    sig_rst <= btnc;
     led <= sig_count(17 downto 2);
  
  --                     Instantiation of components
@@ -159,7 +156,7 @@ begin
     port map (
         u_d => sig_dir,
         step => sig_step,
-        rst => btnc,
+        rst => btnc or (sig_count(0) or sig_count(19)),
         led => sig_count(17 downto 2),
         count18 => sig_count(18),
         count17 => sig_count(17),
@@ -196,7 +193,7 @@ upb : debounce
         clk => clk,
         rst => btnc,
         btn_in => btnu,
-        btn_state => btn_states (0),
+        btn_state => open,
         btn_press => sig_btnu_press
     );
     
@@ -206,7 +203,7 @@ downb : debounce
         clk => clk,
         rst => btnc,
         btn_in => btnd,
-        btn_state => btn_states (1),
+        btn_state => open,
         btn_press => sig_btnd_press
     );
     
@@ -216,7 +213,7 @@ rightb : debounce
         clk => clk,
         rst => btnc,
         btn_in => btnr,
-        btn_state => btn_states (2),
+        btn_state => open,
         btn_press => sig_btnr_press
     );
     
@@ -226,13 +223,60 @@ leftb : debounce
         clk => clk,
         rst => btnc,
         btn_in => btnl,
-        btn_state => btn_states (3),
+        btn_state => open,
         btn_press => sig_btnl_press
     );
 
---                          Main game process
--------------------------------------------------------------------------------------------------
+-- direction changing FlipFlop
+FlipFlop : RS
+    port map (
+        clk => clk,
+        R => sig_btnl_press and (sig_count(17) or sig_count(18)),
+        S => sig_btnr_press and (sig_count(2) or sig_count(1)),
+        Q => sig_dir
+    );
 
+--player 1 score counters (asynchronous!):
+P1L : counter10
+    port map (
+        clk => sig_count(0),
+        rst => btnc,
+        en => 1,
+        cnt => sig_player1ScoreL(3 downto 0),
+        c_out => sig_player1CntCarry
+    );
+
+P1H : counter10
+    port map (
+        clk => sig_player1CntCarry,
+        rst => btnc,
+        en => 1,
+        cnt => sig_player1ScoreH(3 downto 0),
+        c_out => open
+    );
+
+--player 2 score counters (asynchronous!):
+P2L : counter10
+    port map (
+        clk => sig_count(19),
+        rst => btnc,
+        en => 1,
+        cnt => sig_player2ScoreL(3 downto 0),
+        c_out => sig_player2CntCarry
+    );
+
+P2H : counter10
+    port map (
+        clk => sig_player2CntCarry,
+        rst => btnc,
+        en => 1,
+        cnt => sig_player2ScoreH(3 downto 0),
+        c_out => open
+    );
+
+
+--making of display data vector
+sig_display_data <= sig_player1ScoreH (3 downto 0) & sig_player1ScoreL (3 downto 0) & b"0000_0000_0000_0" & sig_speed (2 downto 0) & b"0000_0000" & sig_player2ScoreH (3 downto 0) & sig_player2ScoreL (3 downto 0);
 
  
 

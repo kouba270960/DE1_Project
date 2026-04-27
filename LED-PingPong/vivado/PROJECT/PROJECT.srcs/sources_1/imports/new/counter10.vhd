@@ -42,17 +42,21 @@ architecture Behavioral of counter10 is
 
 begin
 
-    --! Clocked process with synchronous reset which implements
-    --! N-bit up counter.
+    p_rst : process(rst) is
+    begin
+        if rising_edge(rst) then    -- Asynchronous, active-high reset
+            sig_cnt <= 0;
+            c_out <= 0;
+        end if;
+    end process p_rst;
+
+    --! Clocked process with asynchronous reset which implements
+    --! 4-bit up counter ending in state 9.
 
     p_counter : process (clk) is
     begin
         if rising_edge(clk) then
-            if rst = '1' then    -- Synchronous, active-high reset
-                sig_cnt <= 0;
-                c_out <= 0;
-
-            elsif en = '1' then  -- Clock enable activated
+            if en = '1' then  -- Clock enable activated
                 if sig_cnt = 9
                     sig_cnt <= 0;
                     c_out <= 1;
