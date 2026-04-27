@@ -82,7 +82,32 @@ architecture Behavioral of PingPong_top is
            btn_press : out STD_LOGIC);
     end component;
     
---Counter for scores
+--Counters for scores
+    component counter10 is
+        Port ( 
+           clk : in STD_LOGIC;
+           rst : in STD_LOGIC;
+           en : in STD_LOGIC;
+           cnt : out STD_LOGIC_VECTOR(3 downto 0);
+           c_out : out STD_LOGIC;
+    end component;
+
+
+--RS FlipFlop
+    component RS is
+        port(
+            clk : in STD_LOGIC;
+            R   : in STD_LOGIC;
+            S   : in STD_LOGIC;
+            Q   : in STD_LOGIC;
+        );
+
+
+
+
+
+
+
 
 --                      Signals
 ---------------------------------------------------------------------------------------------------------------
@@ -93,13 +118,25 @@ architecture Behavioral of PingPong_top is
     signal sig_btnd_press    : std_logic;
     signal sig_speed         : std_logic_vector(2 downto 0);        --output of CNT_B_BD
     signal sig_step          : std_logic;                           --step input of CNT_D_BD
-    signal sig_dir           : std_logic := '1';                    --direction of CNT_D_BD
+    signal sig_dir           : std_logic;                           --direction of CNT_D_BD
     signal sig_led           : std_logic_vector(15 downto 0);       --obsolete?
     signal sig_count         : std_logic_vector(19 downto 0);       --output of CNT_D_BD
     signal sig_left_score    : unsigned(3 downto 0) := (others => '0');
     signal sig_right_score   : unsigned(3 downto 0) := (others => '0');
     signal sig_display_data  : std_logic_vector(31 downto 0);
     signal btn_states        : std_logic_vector(3 downto 0);
+
+    signal player1CntCarry   : std_logic;
+    signal player2CntCarry   : std_logic;
+
+    signal player1ScoreL     : std_logic_vector(3 downto 0);
+    signal player1ScoreH     : std_logic_vector(3 downto 0);
+
+    signal player2ScoreL     : std_logic_vector(3 downto 0);
+    signal player2ScoreH     : std_logic_vector(3 downto 0);
+
+
+
 begin
 
     sig_rst <= btnc;
@@ -154,7 +191,7 @@ display : display_driver
     );
     
 -- debounce for up button
-up : debounce
+upb : debounce
     port map (
         clk => clk,
         rst => btnc,
@@ -164,7 +201,7 @@ up : debounce
     );
     
 -- debounce for down button
-down : debounce
+downb : debounce
     port map (
         clk => clk,
         rst => btnc,
@@ -174,7 +211,7 @@ down : debounce
     );
     
 -- debounce for up button
-right : debounce
+rightb : debounce
     port map (
         clk => clk,
         rst => btnc,
@@ -184,7 +221,7 @@ right : debounce
     );
     
 -- debounce for up button
-left : debounce
+leftb : debounce
     port map (
         clk => clk,
         rst => btnc,
