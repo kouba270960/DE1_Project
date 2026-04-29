@@ -152,7 +152,7 @@ begin
  -------------------------------------------------------------------------------------------------------------------
  
  clock0 : clk_en2
-    generic map ( G_BASE_COUNT => 100 ) --2500000 for run, 100 for simulation
+    generic map ( G_BASE_COUNT => 2500_000 ) --2500_000 for run, 100 for simulation
     port map (
         clk => clk,
         rst => btnc,
