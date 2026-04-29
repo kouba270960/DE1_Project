@@ -16,7 +16,7 @@ set rt::rc [catch {
     set rt::cmdEcho 0
     rt::set_parameter writeXmsg true
     rt::set_parameter enableParallelHelperSpawn true
-    set ::env(RT_TMP) "C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/.Xil/Vivado-7956-PC-708/realtime/tmp"
+    set ::env(RT_TMP) "E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/.Xil/Vivado-9084-PaStaPC/realtime/tmp"
     if { [ info exists ::env(RT_TMP) ] } {
       file delete -force $::env(RT_TMP)
       file mkdir $::env(RT_TMP)
@@ -42,16 +42,17 @@ set rt::rc [catch {
     set rt::useElabCache false
     if {$rt::useElabCache == false} {
       rt::read_vhdl -lib xil_defaultlib {
-      C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/new/bin2seg.vhd
-      C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/new/clk_en.vhd
-      C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/src/clk_en2.vhd
-      C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/src/cnt_b_bd.vhd
-      C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/src/cnt_d_bd.vhd
-      C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/new/counter.vhd
-      C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/new/counter10.vhd
-      C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/new/debounce.vhd
-      C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/src/display_driver.vhd
-      C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/new/PingPong_top.vhd
+      E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/new/RSFlipFlop.vhd
+      E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/new/bin2seg.vhd
+      E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/new/clk_en.vhd
+      E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/src/clk_en2.vhd
+      E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/src/cnt_b_bd.vhd
+      E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/src/cnt_d_bd.vhd
+      E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/new/counter.vhd
+      E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/new/counter10.vhd
+      E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/new/debounce.vhd
+      E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/imports/src/display_driver.vhd
+      E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.srcs/sources_1/new/PingPong_top.vhd
     }
       rt::filesetChecksum
     }
@@ -76,7 +77,7 @@ set rt::rc [catch {
     rt::set_parameter webTalkPath {}
     rt::set_parameter synthDebugLog false
     rt::set_parameter printModuleName false
-    rt::set_parameter enableSplitFlowPath "C:/Users/267153/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/.Xil/Vivado-7956-PC-708/"
+    rt::set_parameter enableSplitFlowPath "E:/VUT/2025-2026/Summer/DE1/DE1_Project/LED-PingPong/vivado/PROJECT/.Xil/Vivado-9084-PaStaPC/"
     set ok_to_delete_rt_tmp true 
     if { [rt::get_parameter parallelDebug] } { 
        set ok_to_delete_rt_tmp false 

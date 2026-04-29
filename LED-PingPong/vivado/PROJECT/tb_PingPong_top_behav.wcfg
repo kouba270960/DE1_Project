@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_PingPong_top_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="tb_PingPong_top" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="139.440000 us"></ZoomStartTime>
+      <ZoomEndTime time="145.029979 us"></ZoomEndTime>
+      <Cursor1Time time="1,000.000000 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="112"></NameColumnWidth>
+      <ValueColumnWidth column_width="58"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="15" />
+   <wvobject fp_name="/tb_PingPong_top/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/btnc" type="logic">
+      <obj_property name="ElementShortName">btnc</obj_property>
+      <obj_property name="ObjectShortName">btnc</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/btnu" type="logic">
+      <obj_property name="ElementShortName">btnu</obj_property>
+      <obj_property name="ObjectShortName">btnu</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/btnl" type="logic">
+      <obj_property name="ElementShortName">btnl</obj_property>
+      <obj_property name="ObjectShortName">btnl</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/btnr" type="logic">
+      <obj_property name="ElementShortName">btnr</obj_property>
+      <obj_property name="ObjectShortName">btnr</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/btnd" type="logic">
+      <obj_property name="ElementShortName">btnd</obj_property>
+      <obj_property name="ObjectShortName">btnd</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/led" type="array">
+      <obj_property name="ElementShortName">led[15:0]</obj_property>
+      <obj_property name="ObjectShortName">led[15:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/seg" type="array">
+      <obj_property name="ElementShortName">seg[6:0]</obj_property>
+      <obj_property name="ObjectShortName">seg[6:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/an" type="array">
+      <obj_property name="ElementShortName">an[7:0]</obj_property>
+      <obj_property name="ObjectShortName">an[7:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/dut/sig_speed" type="array">
+      <obj_property name="ElementShortName">sig_speed[2:0]</obj_property>
+      <obj_property name="ObjectShortName">sig_speed[2:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/dut/sig_step" type="logic">
+      <obj_property name="ElementShortName">sig_step</obj_property>
+      <obj_property name="ObjectShortName">sig_step</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/dut/sig_dir" type="logic">
+      <obj_property name="ElementShortName">sig_dir</obj_property>
+      <obj_property name="ObjectShortName">sig_dir</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/dut/sig_count" type="array">
+      <obj_property name="ElementShortName">sig_count[19:0]</obj_property>
+      <obj_property name="ObjectShortName">sig_count[19:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/dut/sig_display_data" type="array">
+      <obj_property name="ElementShortName">sig_display_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sig_display_data[31:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PingPong_top/dut/sig_game_rst" type="logic">
+      <obj_property name="ElementShortName">sig_game_rst</obj_property>
+      <obj_property name="ObjectShortName">sig_game_rst</obj_property>
+   </wvobject>
+</wave_config>

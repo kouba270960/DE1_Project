@@ -87,19 +87,19 @@ architecture Behavioral of PingPong_top is
         Port ( 
            clk : in STD_LOGIC;
            rst : in STD_LOGIC;
-           en : in STD_LOGIC;
+           count : in STD_LOGIC;
            cnt : out STD_LOGIC_VECTOR(3 downto 0);
            c_out : out STD_LOGIC);
     end component;
 
 
 --RS FlipFlop
-    component RSFF is
+    component RSFlipFlop is
         port(
             clk : in STD_LOGIC;
             R   : in STD_LOGIC;
             S   : in STD_LOGIC;
-            Q   : in STD_LOGIC
+            Q   : out STD_LOGIC
         );
     end component;
 
@@ -113,7 +113,6 @@ architecture Behavioral of PingPong_top is
     signal sig_speed         : std_logic_vector(2 downto 0);        --output of CNT_B_BD
     signal sig_step          : std_logic;                           --step input of CNT_D_BD
     signal sig_dir           : std_logic;                           --direction of CNT_D_BD
-    signal sig_led           : std_logic_vector(15 downto 0);       --obsolete?
     signal sig_count         : std_logic_vector(19 downto 0);       --output of CNT_D_BD
     signal sig_left_score    : unsigned(3 downto 0) := (others => '0');
     signal sig_right_score   : unsigned(3 downto 0) := (others => '0');
@@ -127,18 +126,33 @@ architecture Behavioral of PingPong_top is
 
     signal sig_player2ScoreL     : std_logic_vector(3 downto 0);
     signal sig_player2ScoreH     : std_logic_vector(3 downto 0);
+    
+    signal sig_game_rst : std_logic;
+    
+    signal sig_R : std_logic;
+    signal sig_S : std_logic;
+    
+    signal sig_addP1 : std_logic;
+    signal sig_addP2 : std_logic;
 
 
 
 begin
 
     led <= sig_count(17 downto 2);
+    sig_game_rst <= btnc or (sig_count(0) or sig_count(19));
+    
+    sig_addP2 <= sig_count(19) or sig_count(18);
+    sig_addP1 <= sig_count(0) or sig_count(1);
+    
+    sig_R <= sig_btnl_press and sig_count(17);
+    sig_S <= sig_btnr_press and sig_count(2);
  
  --                     Instantiation of components
  -------------------------------------------------------------------------------------------------------------------
  
  clock0 : clk_en2
-    generic map ( G_BASE_COUNT => 100000000 )
+    generic map ( G_BASE_COUNT => 100 ) --2500000 for run, 100 for simulation
     port map (
         clk => clk,
         rst => btnc,
@@ -151,11 +165,11 @@ begin
     port map (
         u_d => sig_dir,
         step => sig_step,
-        rst => btnc or (sig_count(0) or sig_count(19)),
+        rst => sig_game_rst,
         led => sig_count(17 downto 2),
         count18 => sig_count(18),
-        count17 => sig_count(17),
-        count2 => sig_count(2),
+        count17 => open,
+        count2 => open,
         count1 => sig_count(1),
         count19 => sig_count(19),
         count0 => sig_count(0)
@@ -223,45 +237,45 @@ leftb : debounce
     );
 
 -- direction changing FlipFlop
---FlipFlop : RSFF
---    port map (
---        clk => clk,
---        R => sig_btnl_press and (sig_count(17) or sig_count(18)),
---        S => sig_btnr_press and (sig_count(2) or sig_count(1)),
---        Q => sig_dir
---    );
+FlipFlop : RSFlipFlop
+    port map (
+        clk => clk,
+        R => sig_R,
+        S => sig_S,
+        Q => sig_dir
+    );
 
-p_rs : process (clk) is
-    begin
-    if rising_edge(Clk) then
-            if ((sig_btnl_press and (sig_count(17) or sig_count(18))) = '1') then
-                sig_dir <= '0'; 
-            elsif ((sig_btnr_press and (sig_count(2) or sig_count(1))) = '1') then
-                sig_dir <= '1'; 
-            elsif (((sig_btnr_press and (sig_count(2) or sig_count(1))) = '0') and ((sig_btnl_press and (sig_count(17) or sig_count(18))) = '0')) then
-                sig_dir <= '1'; 
-            else
-                sig_dir <= sig_dir;
-            end if;
-        end if;
+--p_rs : process (clk) is
+--    begin
+--    if rising_edge(Clk) then
+--            if ((sig_btnl_press and (sig_count(17) or sig_count(18))) = '1') then
+--                sig_dir <= '1'; 
+--            elsif ((sig_btnr_press and (sig_count(2) or sig_count(1))) = '1') then
+--                sig_dir <= '0'; 
+--            elsif (((sig_btnr_press and (sig_count(2) or sig_count(1))) = '0') and ((sig_btnl_press and (sig_count(17) or sig_count(18))) = '0')) then
+--                sig_dir <= '1'; 
+--            else
+--                sig_dir <= sig_dir;
+--            end if;
+--        end if;
 
-end process p_rs;
+--end process p_rs;
 
 --player 1 score counters (asynchronous!):
 P1L : counter10
     port map (
-        clk => sig_count(0),
+        clk => clk,
         rst => btnc,
-        en => '1',
+        count => sig_addP1,
         cnt => sig_player1ScoreL(3 downto 0),
         c_out => sig_player1CntCarry
     );
 
 P1H : counter10
     port map (
-        clk => sig_player1CntCarry,
+        clk => clk,
         rst => btnc,
-        en => '1',
+        count => sig_player1CntCarry,
         cnt => sig_player1ScoreH(3 downto 0),
         c_out => open
     );
@@ -269,25 +283,26 @@ P1H : counter10
 --player 2 score counters (asynchronous!):
 P2L : counter10
     port map (
-        clk => sig_count(19),
+        clk => clk,
         rst => btnc,
-        en => '1',
+        count => sig_addP2,
         cnt => sig_player2ScoreL(3 downto 0),
         c_out => sig_player2CntCarry
     );
 
 P2H : counter10
     port map (
-        clk => sig_player2CntCarry,
+        clk => clk,
         rst => btnc,
-        en => '1',
+        count => sig_player2CntCarry,
         cnt => sig_player2ScoreH(3 downto 0),
         c_out => open
     );
+    
 
 
 --making of display data vector
-sig_display_data <= sig_player1ScoreH (3 downto 0) & sig_player1ScoreL (3 downto 0) & b"0000_0000_0" & sig_speed (2 downto 0) & b"0000" & sig_player2ScoreH (3 downto 0) & sig_player2ScoreL (3 downto 0);
+sig_display_data <= (sig_player1ScoreH & sig_player1ScoreL & b"0000_0000_0" & sig_speed & b"0000" & sig_player2ScoreH & sig_player2ScoreL);
 
  
 

@@ -52,3 +52,35 @@ The goal is to create a reaction game using the 16 onboard LEDs and push buttons
 - The result vawe of component test simulation is:
 
 ![display_driver vawe window](display_driver_tb.png)
+
+### RSFlipFlop
+
+-this is a simple RS flip flop without /q
+
+-result of component simulation is:
+
+![RSFlipFlop vawe window](RSFlipFlop_sim.png)
+
+### counter10
+
+-this component is a simple bcd counter (4 bit counter counting from 0 to 9)
+-provides c_out carry output allowing to daisychain these counters for requiret number of decimals
+
+-The result of simulation is:
+
+![counter10 vawe window](counter10_sim.png)
+
+
+### other
+
+
+
+##simulation of top component
+
+-These are results of top level implementation simulation and elaborated desich schematic:
+
+![top01 vawe window](TOP1_sim.png)
+
+![top02 vawe window](TOP2_sim.png)
+
+![schema window](TOP1_sch.png)
