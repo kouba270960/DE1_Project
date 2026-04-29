@@ -79,8 +79,8 @@ The goal is to create a reaction game using the 16 onboard LEDs and push buttons
 
 -These are results of top level implementation simulation and elaborated desich schematic:
 
-![top01 vawe window](TOP1_sim.png)
+![top01 vawe window](TOP01_sim.png)
 
-![top02 vawe window](TOP2_sim.png)
+![top02 vawe window](TOP02_sim.png)
 
-![schema window](TOP1_sch.png)
+![schema window](TOP01_sch.png)
