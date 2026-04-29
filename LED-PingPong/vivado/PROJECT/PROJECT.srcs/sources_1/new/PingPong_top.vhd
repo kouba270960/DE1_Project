@@ -89,24 +89,19 @@ architecture Behavioral of PingPong_top is
            rst : in STD_LOGIC;
            en : in STD_LOGIC;
            cnt : out STD_LOGIC_VECTOR(3 downto 0);
-           c_out : out STD_LOGIC;
+           c_out : out STD_LOGIC);
     end component;
 
 
 --RS FlipFlop
-    component RS is
+    component RSFF is
         port(
             clk : in STD_LOGIC;
             R   : in STD_LOGIC;
             S   : in STD_LOGIC;
-            Q   : in STD_LOGIC;
+            Q   : in STD_LOGIC
         );
-
-
-
-
-
-
+    end component;
 
 
 --                      Signals
@@ -228,20 +223,36 @@ leftb : debounce
     );
 
 -- direction changing FlipFlop
-FlipFlop : RS
-    port map (
-        clk => clk,
-        R => sig_btnl_press and (sig_count(17) or sig_count(18)),
-        S => sig_btnr_press and (sig_count(2) or sig_count(1)),
-        Q => sig_dir
-    );
+--FlipFlop : RSFF
+--    port map (
+--        clk => clk,
+--        R => sig_btnl_press and (sig_count(17) or sig_count(18)),
+--        S => sig_btnr_press and (sig_count(2) or sig_count(1)),
+--        Q => sig_dir
+--    );
+
+p_rs : process (clk) is
+    begin
+    if rising_edge(Clk) then
+            if ((sig_btnl_press and (sig_count(17) or sig_count(18))) = '1') then
+                sig_dir <= '0'; 
+            elsif ((sig_btnr_press and (sig_count(2) or sig_count(1))) = '1') then
+                sig_dir <= '1'; 
+            elsif (((sig_btnr_press and (sig_count(2) or sig_count(1))) = '0') and ((sig_btnl_press and (sig_count(17) or sig_count(18))) = '0')) then
+                sig_dir <= '1'; 
+            else
+                sig_dir <= sig_dir;
+            end if;
+        end if;
+
+end process p_rs;
 
 --player 1 score counters (asynchronous!):
 P1L : counter10
     port map (
         clk => sig_count(0),
         rst => btnc,
-        en => 1,
+        en => '1',
         cnt => sig_player1ScoreL(3 downto 0),
         c_out => sig_player1CntCarry
     );
@@ -250,7 +261,7 @@ P1H : counter10
     port map (
         clk => sig_player1CntCarry,
         rst => btnc,
-        en => 1,
+        en => '1',
         cnt => sig_player1ScoreH(3 downto 0),
         c_out => open
     );
@@ -260,7 +271,7 @@ P2L : counter10
     port map (
         clk => sig_count(19),
         rst => btnc,
-        en => 1,
+        en => '1',
         cnt => sig_player2ScoreL(3 downto 0),
         c_out => sig_player2CntCarry
     );
@@ -269,14 +280,14 @@ P2H : counter10
     port map (
         clk => sig_player2CntCarry,
         rst => btnc,
-        en => 1,
+        en => '1',
         cnt => sig_player2ScoreH(3 downto 0),
         c_out => open
     );
 
 
 --making of display data vector
-sig_display_data <= sig_player1ScoreH (3 downto 0) & sig_player1ScoreL (3 downto 0) & b"0000_0000_0000_0" & sig_speed (2 downto 0) & b"0000_0000" & sig_player2ScoreH (3 downto 0) & sig_player2ScoreL (3 downto 0);
+sig_display_data <= sig_player1ScoreH (3 downto 0) & sig_player1ScoreL (3 downto 0) & b"0000_0000_0" & sig_speed (2 downto 0) & b"0000" & sig_player2ScoreH (3 downto 0) & sig_player2ScoreL (3 downto 0);
 
  
 

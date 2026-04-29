@@ -5,20 +5,20 @@ entity RS_FlipFlop is
     Port ( S : in  STD_LOGIC;
            R : in  STD_LOGIC;
            clk : in  STD_LOGIC;
-           Q : out  STD_LOGIC;
+           Q : out  STD_LOGIC);
 end RS_FlipFlop;
 
-architecture Behavioral of RS is
+architecture Behavioral of RSFF is
 begin
     process(Clk)
     begin
         if rising_edge(Clk) then
             if (S = '0' and R = '0') then
-                Q <= Q; -- No change
+                Q <= Q; 
             elsif (S = '1' and R = '0') then
-                Q <= '1'; -- Set
+                Q <= '1'; 
             elsif (S = '0' and R = '1') then
-                Q <= '0'; -- Reset
+                Q <= '0'; 
             else
                 Q <= '0'; -- Undefined state, using zero as result
             end if;
