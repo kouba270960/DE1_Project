@@ -101,9 +101,9 @@ begin
         wait for 10 * TbPeriod;
         btnr <= '0';
         wait for 2990 * TbPeriod;
-        btnl <= '1';
+        --btnl <= '1';
         wait for 10 * TbPeriod;
-        btnl <= '0';
+        --btnl <= '0';
         
         
         

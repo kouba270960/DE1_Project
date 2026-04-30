@@ -23,3 +23,18 @@
 #-----------------------------------------------------------
 start_gui
 open_project C:/Users/PASTA/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/PROJECT.xpr
+update_compile_order -fileset sources_1
+reset_project
+launch_simulation
+open_wave_config C:/Users/PASTA/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/tb_PingPong_top_behav.wcfg
+source tb_PingPong_top.tcl
+close_sim
+launch_simulation
+open_wave_config C:/Users/PASTA/Desktop/DE1_Project/LED-PingPong/vivado/PROJECT/tb_PingPong_top_behav.wcfg
+source tb_PingPong_top.tcl
+close_sim
+launch_runs impl_1 -to_step write_bitstream -jobs 16
+wait_on_run impl_1
+synth_design -rtl -rtl_skip_mlo -name rtl_1
+close_design
+reset_project
