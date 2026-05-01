@@ -1,53 +1,105 @@
-library ieee;
-use ieee.std_logic_1164.all;
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-----------------------------------------------
 
 entity debounce is
-    generic (
-        G_SAMPLE_MAX : positive := 1_000_000
-    );
-    port (
-        clk       : in  std_logic;
-        rst       : in  std_logic;
-        btn_in    : in  std_logic;
-        btn_state : out std_logic;
-        btn_press : out std_logic
-    );
-end entity debounce;
+    Port ( clk : in STD_LOGIC;
+           rst : in STD_LOGIC;
+           btn_in : in STD_LOGIC;
+           btn_state : out STD_LOGIC;
+           btn_press : out STD_LOGIC);
+end debounce;
 
 architecture Behavioral of debounce is
-    signal sig_sample_cnt : natural range 0 to G_SAMPLE_MAX - 1 := 0;
-    signal sig_sync_0     : std_logic := '0';
-    signal sig_sync_1     : std_logic := '0';
-    signal sig_state      : std_logic := '0';
-    signal sig_prev_state : std_logic := '0';
-begin
+    ----------------------------------------------------------------
+    -- Constants
+    ----------------------------------------------------------------
+    constant C_SHIFT_LEN : positive := 4;  -- Debounce history
+    constant C_MAX       : positive := 20000;  -- Sampling period
+                                           -- 2 for simulation
+                                           -- 20_000 (0.2 ms) for implementation !!!
 
-    p_debounce : process (clk) is
+    ----------------------------------------------------------------
+    -- Internal signals
+    ----------------------------------------------------------------
+    signal ce_sample : std_logic;
+    signal sync0     : std_logic;
+    signal sync1     : std_logic;
+    signal shift_reg : std_logic_vector(C_SHIFT_LEN-1 downto 0);
+    signal debounced : std_logic;
+    signal delayed   : std_logic;
+
+    ----------------------------------------------------------------
+    -- Component declaration for clock enable
+    ----------------------------------------------------------------
+    component clk_en is
+        generic ( G_MAX : positive );
+        port (
+            clk : in  std_logic;
+            rst : in  std_logic;
+            ce  : out std_logic
+        );
+    end component clk_en;
+
+begin
+    ----------------------------------------------------------------
+    -- Clock enable instance
+    ----------------------------------------------------------------
+    clock_0 : clk_en
+        generic map ( G_MAX => C_MAX )
+        port map (
+            clk => clk,
+            rst => rst,
+            ce  => ce_sample
+        );
+
+    ----------------------------------------------------------------
+    -- Synchronizer + debounce
+    ----------------------------------------------------------------
+    p_debounce : process(clk)
     begin
         if rising_edge(clk) then
             if rst = '1' then
-                sig_sample_cnt <= 0;
-                sig_sync_0     <= '0';
-                sig_sync_1     <= '0';
-                sig_state      <= '0';
-                sig_prev_state <= '0';
-            else
-                sig_sync_0 <= btn_in;
-                sig_sync_1 <= sig_sync_0;
+                sync0     <= '0';
+                sync1     <= '0';
+                shift_reg <= (others => '0');
+                debounced <= '0';
+                delayed   <= '0';
 
-                if sig_sample_cnt = G_SAMPLE_MAX - 1 then
-                    sig_sample_cnt <= 0;
-                    sig_prev_state <= sig_state;
-                    sig_state      <= sig_sync_1;
-                else
-                    sig_sample_cnt <= sig_sample_cnt + 1;
-                    sig_prev_state <= sig_state;
+            else
+                -- Input synchronizer
+                sync1 <= sync0;
+                sync0 <= btn_in;
+
+                -- Sample only when enable pulse occurs
+                if ce_sample = '1' then 
+
+                    -- Shift values to the left and load a new sample as LSB
+                    shift_reg <= shift_reg(C_SHIFT_LEN-2 downto 0) & sync1;
+
+                    -- Check if all bits are '1'
+                    if shift_reg = (shift_reg'range => '1') then
+                        debounced <= '1';
+                    -- Check if all bits are '0'
+                    elsif shift_reg = (shift_reg'range => '0') then
+                        debounced <= '0';
+                    end if;
+
                 end if;
+
+                -- One clock delayed output for edge detector
+                delayed <= debounced;
             end if;
         end if;
-    end process p_debounce;
+    end process;
 
-    btn_state <= sig_state;
-    btn_press <= sig_state and not sig_prev_state;
+    ----------------------------------------------------------------
+    -- Outputs
+    ----------------------------------------------------------------
+    btn_state <= debounced;
 
-end architecture Behavioral;
+    -- One-clock pulse when button pressed
+    btn_press <= debounced and not(delayed);
+
+end Behavioral;

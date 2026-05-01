@@ -19,166 +19,291 @@ end entity PingPong_top;
 architecture Behavioral of PingPong_top is
     constant C_AN_ENABLE : std_logic_vector(7 downto 0) := "00110100";
 
-    signal sig_rst           : std_logic;
+
+
+ --                     Declaration of components
+ --------------------------------------------------------------------------------------------------------------
+ --adjustable clock enable
+    component clk_en2 is
+        generic( G_BASE_COUNT : positive);
+        port (
+        clk     : in  std_logic;
+        cnt_set : in  std_logic_vector(2 downto 0);
+        rst     : in  std_logic;
+        ce      : out std_logic
+        );
+    end component;
+    
+-- display driver
+    component display_driver is
+        Port ( clk : in STD_LOGIC;
+           rst : in STD_LOGIC;
+           data : in STD_LOGIC_VECTOR (31 downto 0);
+           an_enable : in STD_LOGIC_VECTOR (7 downto 0);
+           seg : out STD_LOGIC_VECTOR (6 downto 0);
+           anode : out STD_LOGIC_VECTOR (7 downto 0));
+    end component;
+    
+--Main decadic counter
+    component cnt_d_bd is
+        port (
+        u_d     : in  std_logic;  -- '1' = doprava, '0' = doleva
+        step    : in  std_logic;  -- posun o 1 krok
+        rst     : in  std_logic;
+
+        led     : out std_logic_vector(15 downto 0);
+
+        count18 : out std_logic;
+        count17 : out std_logic;
+        count2  : out std_logic;
+        count1  : out std_logic;
+        count19 : out std_logic;
+        count0  : out std_logic
+    );
+    end component;
+    
+--Binary counter
+    component cnt_b_bd is
+        port (
+        clk        : in  std_logic;
+        rst        : in  std_logic;
+        count_up   : in  std_logic;
+        count_down : in  std_logic;
+        count      : out std_logic_vector(2 downto 0)
+    );
+    end component;
+    
+--Debouncer
+    component debounce is
+        Port ( clk : in STD_LOGIC;
+           rst : in STD_LOGIC;
+           btn_in : in STD_LOGIC;
+           btn_state : out STD_LOGIC;
+           btn_press : out STD_LOGIC);
+    end component;
+    
+--Counters for scores
+    component counter10 is
+        Port ( 
+           clk : in STD_LOGIC;
+           rst : in STD_LOGIC;
+           count : in STD_LOGIC;
+           cnt : out STD_LOGIC_VECTOR(3 downto 0);
+           c_out : out STD_LOGIC);
+    end component;
+
+
+--RS FlipFlop
+    component RSFlipFlop is
+        port(
+            clk : in STD_LOGIC;
+            R   : in STD_LOGIC;
+            S   : in STD_LOGIC;
+            Q   : out STD_LOGIC
+        );
+    end component;
+
+
+--                      Signals
+---------------------------------------------------------------------------------------------------------------
     signal sig_btnl_press    : std_logic;
     signal sig_btnr_press    : std_logic;
     signal sig_btnu_press    : std_logic;
     signal sig_btnd_press    : std_logic;
-    signal sig_left_bounce   : std_logic;
-    signal sig_right_bounce  : std_logic;
-    signal sig_up_bounce     : std_logic;
-    signal sig_down_bounce   : std_logic;
-    signal sig_speed         : std_logic_vector(2 downto 0);
-    signal sig_step          : std_logic;
-    signal sig_dir           : std_logic := '1';
-    signal sig_led           : std_logic_vector(15 downto 0);
-    signal sig_count         : std_logic_vector(19 downto 0);
-    signal sig_left_window   : std_logic;
-    signal sig_right_window  : std_logic;
-    signal sig_left_hit      : std_logic;
-    signal sig_right_hit     : std_logic;
-    signal sig_count19_prev  : std_logic := '0';
-    signal sig_count0_prev   : std_logic := '0';
-    signal sig_left_score_en : std_logic := '0';
-    signal sig_right_score_en: std_logic := '0';
-    signal sig_left_score    : std_logic_vector(7 downto 0);
-    signal sig_right_score   : std_logic_vector(7 downto 0);
+    signal sig_speed         : std_logic_vector(2 downto 0);        --output of CNT_B_BD
+    signal sig_step          : std_logic;                           --step input of CNT_D_BD
+    signal sig_dir           : std_logic;                           --direction of CNT_D_BD
+    signal sig_count         : std_logic_vector(19 downto 0);       --output of CNT_D_BD
+    signal sig_left_score    : unsigned(3 downto 0) := (others => '0');
+    signal sig_right_score   : unsigned(3 downto 0) := (others => '0');
     signal sig_display_data  : std_logic_vector(31 downto 0);
+
+    signal sig_player1CntCarry   : std_logic;
+    signal sig_player2CntCarry   : std_logic;
+
+    signal sig_player1ScoreL     : std_logic_vector(3 downto 0);
+    signal sig_player1ScoreH     : std_logic_vector(3 downto 0);
+
+    signal sig_player2ScoreL     : std_logic_vector(3 downto 0);
+    signal sig_player2ScoreH     : std_logic_vector(3 downto 0);
+    
+    signal sig_game_rst : std_logic;
+    
+    signal sig_R : std_logic;
+    signal sig_S : std_logic;
+    
+    signal sig_addP1 : std_logic;
+    signal sig_addP2 : std_logic;
+
+
+
 begin
 
-    sig_rst <= btnc;
-    led <= sig_led;
+    led <= sig_count(17 downto 2);
+    sig_game_rst <= btnc or (sig_count(0) or sig_count(19));
+    
+    sig_addP2 <= sig_count(19) or sig_count(18);
+    sig_addP1 <= sig_count(0) or sig_count(1);
+    
+    sig_R <= sig_btnl_press and sig_count(17);
+    sig_S <= sig_btnr_press and sig_count(2);
+ 
+ --                     Instantiation of components
+ -------------------------------------------------------------------------------------------------------------------
+ 
+ clock0 : clk_en2
+    generic map ( G_BASE_COUNT => 4000_000 ) --4000_000 for run, 100 for simulation
+    port map (
+        clk => clk,
+        rst => btnc,
+        cnt_set => sig_speed,
+        ce => sig_step    
+    );
+    
+ -- main game counter
+ game : cnt_d_bd
+    port map (
+        u_d => sig_dir,
+        step => sig_step,
+        rst => sig_game_rst,
+        led => sig_count(17 downto 2),
+        count18 => sig_count(18),
+        count17 => open,
+        count2 => open,
+        count1 => sig_count(1),
+        count19 => sig_count(19),
+        count0 => sig_count(0)
+    );
+    
+-- speed counter
+speed : cnt_b_bd
+    port map (
+        clk => clk,
+        rst => btnc,
+        count_up => sig_btnu_press,
+        count_down => sig_btnd_press,
+        count => sig_speed
+    );
 
-    debounce_left : entity work.debounce
-        port map (
-            clk       => clk,
-            rst       => sig_rst,
-            btn_in    => btnr,
-            btn_state => sig_left_bounce,
-            btn_press => sig_btnl_press
-        );
+-- display
+display : display_driver
+    port map (
+        clk => clk,
+        rst => btnc,
+        data => sig_display_data,
+        an_enable => C_AN_ENABLE,
+        seg => seg,
+        anode => an
+    );
+    
+-- debounce for up button
+upb : debounce
+    port map (
+        clk => clk,
+        rst => btnc,
+        btn_in => btnu,
+        btn_state => open,
+        btn_press => sig_btnu_press
+    );
+    
+-- debounce for down button
+downb : debounce
+    port map (
+        clk => clk,
+        rst => btnc,
+        btn_in => btnd,
+        btn_state => open,
+        btn_press => sig_btnd_press
+    );
+    
+-- debounce for up button
+rightb : debounce
+    port map (
+        clk => clk,
+        rst => btnc,
+        btn_in => btnr,
+        btn_state => open,
+        btn_press => sig_btnr_press
+    );
+    
+-- debounce for up button
+leftb : debounce
+    port map (
+        clk => clk,
+        rst => btnc,
+        btn_in => btnl,
+        btn_state => open,
+        btn_press => sig_btnl_press
+    );
 
-    debounce_right : entity work.debounce
-        port map (
-            clk       => clk,
-            rst       => sig_rst,
-            btn_in    => btnl,
-            btn_state => sig_right_bounce,
-            btn_press => sig_btnr_press
-        );
+-- direction changing FlipFlop
+FlipFlop : RSFlipFlop
+    port map (
+        clk => clk,
+        R => sig_R,
+        S => sig_S,
+        Q => sig_dir
+    );
 
-    debounce_up : entity work.debounce
-        port map (
-            clk       => clk,
-            rst       => sig_rst,
-            btn_in    => btnu,
-            btn_state => sig_up_bounce,
-            btn_press => sig_btnu_press
-        );
+--p_rs : process (clk) is
+--    begin
+--    if rising_edge(Clk) then
+--            if ((sig_btnl_press and (sig_count(17) or sig_count(18))) = '1') then
+--                sig_dir <= '1'; 
+--            elsif ((sig_btnr_press and (sig_count(2) or sig_count(1))) = '1') then
+--                sig_dir <= '0'; 
+--            elsif (((sig_btnr_press and (sig_count(2) or sig_count(1))) = '0') and ((sig_btnl_press and (sig_count(17) or sig_count(18))) = '0')) then
+--                sig_dir <= '1'; 
+--            else
+--                sig_dir <= sig_dir;
+--            end if;
+--        end if;
 
-    debounce_down : entity work.debounce
-        port map (
-            clk       => clk,
-            rst       => sig_rst,
-            btn_in    => btnd,
-            btn_state => sig_down_bounce,
-            btn_press => sig_btnd_press
-        );
+--end process p_rs;
 
-    speed_counter : entity work.cnt_b_bd
-        port map (
-            clk        => clk,
-            rst        => sig_rst,
-            count_up   => sig_btnu_press,
-            count_down => sig_btnd_press,
-            count      => sig_speed
-        );
+--player 1 score counters (asynchronous!):
+P1L : counter10
+    port map (
+        clk => clk,
+        rst => btnc,
+        count => sig_addP1,
+        cnt => sig_player1ScoreL(3 downto 0),
+        c_out => sig_player1CntCarry
+    );
 
-    speed_enable : entity work.clk_en
-        generic map (
-            G_BASE_COUNT => 3_000_000
-        )
-        port map (
-            clk     => clk,
-            cnt_set => sig_speed,
-            rst     => sig_rst,
-            ce      => sig_step
-        );
+P1H : counter10
+    port map (
+        clk => clk,
+        rst => btnc,
+        count => sig_player1CntCarry,
+        cnt => sig_player1ScoreH(3 downto 0),
+        c_out => open
+    );
 
-    ball_counter : entity work.cnt_d_bd
-        port map (
-            clk     => clk,
-            u_d     => sig_dir,
-            step    => sig_step,
-            rst     => sig_rst,
-            led     => sig_led,
-            count   => sig_count
-        );
+--player 2 score counters (asynchronous!):
+P2L : counter10
+    port map (
+        clk => clk,
+        rst => btnc,
+        count => sig_addP2,
+        cnt => sig_player2ScoreL(3 downto 0),
+        c_out => sig_player2CntCarry
+    );
 
-    sig_left_window <= sig_count(2);
-    sig_right_window <= sig_count(17);
+P2H : counter10
+    port map (
+        clk => clk,
+        rst => btnc,
+        count => sig_player2CntCarry,
+        cnt => sig_player2ScoreH(3 downto 0),
+        c_out => open
+    );
+    
 
-    sig_left_hit <= sig_btnl_press and sig_left_window;
-    sig_right_hit <= sig_btnr_press and sig_right_window;
 
-    p_direction_latch : process (clk) is
-    begin
-        if rising_edge(clk) then
-            if sig_rst = '1' then
-                sig_dir <= '1';
-                sig_count19_prev <= '0';
-                sig_count0_prev <= '0';
-                sig_left_score_en <= '0';
-                sig_right_score_en <= '0';
-            else
-                sig_count19_prev <= sig_count(19);
-                sig_count0_prev <= sig_count(0);
-                sig_left_score_en <= sig_count(19) and not sig_count19_prev;
-                sig_right_score_en <= sig_count(0) and not sig_count0_prev;
+--making of display data vector
+sig_display_data <= (sig_player1ScoreH & sig_player1ScoreL & b"0000_0000_0" & sig_speed & b"0000" & sig_player2ScoreH & sig_player2ScoreL);
 
-                if sig_left_hit = '1' then
-                    sig_dir <= '1';
-                elsif sig_right_hit = '1' then
-                    sig_dir <= '0';
-                elsif sig_count(19) = '1' then
-                    sig_dir <= '0';
-                elsif sig_count(0) = '1' then
-                    sig_dir <= '1';
-                end if;
-            end if;
-        end if;
-    end process p_direction_latch;
-
-    left_score_counter : entity work.cnt_8bit
-        port map (
-            clk   => clk,
-            rst   => sig_rst,
-            count => sig_left_score_en,
-            outp  => sig_left_score
-        );
-
-    right_score_counter : entity work.cnt_8bit
-        port map (
-            clk   => clk,
-            rst   => sig_rst,
-            count => sig_right_score_en,
-            outp  => sig_right_score
-        );
-
-    sig_display_data(31 downto 24) <= sig_right_score;
-    sig_display_data(23 downto 15) <= (others => '0');
-    sig_display_data(14 downto 12) <= sig_speed;
-    sig_display_data(11 downto 8)  <= (others => '0');
-    sig_display_data(7 downto 0)   <= sig_left_score;
-
-    display : entity work.display_driver
-        port map (
-            clk       => clk,
-            rst       => sig_rst,
-            data      => sig_display_data,
-            an_enable => C_AN_ENABLE,
-            seg       => seg,
-            anode     => an
-        );
+ 
 
 end architecture Behavioral;
