@@ -1,73 +1,73 @@
 # LED Ping-Pong
 
-Semestralni projekt do predmetu Digital Electronics 1. Projekt implementuje jednoduchou reakční hru LED Ping-Pong ve VHDL pro desku Nexys A7-50T. Jedna rozsvicena LED predstavuje micek, ktery se pohybuje mezi hraci. Hraci jej odrazeji tlacitky na krajich herniho pole; pokud hrac nestihne odraz, bod ziska souper.
+Semester project for the Digital Electronics 1 course. The project implements a simple two-player LED Ping-Pong reaction game in VHDL for the Nexys A7-50T FPGA board. One active LED represents the ball moving between the players. The players return the ball using push buttons near the edges of the playing field. If a player misses the ball, the opponent receives a point.
 
-## Tym
+## Team
 
 - Jakub Kriva
 - Jonas Salich
 - Pavel Stastny
 
-## Zadani a princip hry
+## Project Description
 
-Hra vyuziva 16 LED, pet tlacitek a sedmisegmentovy displej. Micek se pohybuje po LED poli, smer se meni podle stisku hracskych tlacitek na spravne strane. Rychlost pohybu lze menit tlacitky `btnu` a `btnd`. Aktualni skore a nastavena rychlost se zobrazuji na sedmisegmentovem displeji.
+The game uses 16 onboard LEDs, five push buttons and the seven-segment display. The ball moves across the LED field and its direction changes when the correct player button is pressed at the correct edge position. The ball speed can be changed using `btnu` and `btnd`. The current score and speed setting are displayed on the seven-segment display.
 
-Po resetu se hra vrati do vychoziho stavu. Signal `clk` slouzi jako hlavni hodinovy signal, `btnc` jako reset. Blok `clk_en2` vytvari posuvne impulzy pro pohyb micku a blok `cnt_b_bd` nastavuje rychlost.
+After reset, the game returns to its initial state. The `clk` signal is the main system clock and `btnc` is used as reset. The `clk_en2` block generates movement pulses for the ball and the `cnt_b_bd` block stores the current speed setting.
 
-## Blokove schema
+## Block Diagram
 
 ![Project block diagram](DE_1.drawio.png)
 
-## I/O porty top-levelu
+## Top-Level I/O Ports
 
-Top-level komponenta: [PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd)
+Top-level component: [PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd)
 
-| Port | Smer | Sirka | Popis |
+| Port | Direction | Width | Description |
 | --- | --- | ---: | --- |
-| `clk` | input | 1 | Hlavni hodinovy signal z desky Nexys A7-50T. |
-| `btnc` | input | 1 | Stredove tlacitko, reset hry. |
-| `btnl` | input | 1 | Tlacitko leveho hrace. |
-| `btnr` | input | 1 | Tlacitko praveho hrace. |
-| `btnu` | input | 1 | Zvyseni rychlosti micku. |
-| `btnd` | input | 1 | Snizeni rychlosti micku. |
-| `led` | output | 16 | LED pole zobrazujici pozici micku. |
-| `seg` | output | 7 | Segmenty sedmisegmentoveho displeje. |
-| `an` | output | 8 | Vyber aktivni anody sedmisegmentoveho displeje. |
+| `clk` | input | 1 | Main clock signal from the Nexys A7-50T board. |
+| `btnc` | input | 1 | Center push button used as game reset. |
+| `btnl` | input | 1 | Left player push button. |
+| `btnr` | input | 1 | Right player push button. |
+| `btnu` | input | 1 | Increases the ball speed. |
+| `btnd` | input | 1 | Decreases the ball speed. |
+| `led` | output | 16 | LED field showing the current ball position. |
+| `seg` | output | 7 | Seven-segment display segment outputs. |
+| `an` | output | 8 | Seven-segment display anode selection outputs. |
 
-## Struktura repozitare
+## Repository Structure
 
-| Slozka | Obsah |
+| Folder | Content |
 | --- | --- |
-| `LED-PingPong/src/` | Zdrojove VHDL komponenty. |
-| `LED-PingPong/sim/` | Testbenche a simulacni soubory. |
-| `LED-PingPong/sim/img/` | Obrazky prubehu simulaci. |
-| `LED-PingPong/constr/` | XDC constraints pro desku Nexys A7-50T. |
-| `LED-PingPong/vivado/` | Vivado projekt. |
-| `LED-PingPong/docs/` | Dalsi dokumentace a vystupy. |
+| `LED-PingPong/src/` | VHDL source components. |
+| `LED-PingPong/sim/` | Testbenches and simulation files. |
+| `LED-PingPong/sim/img/` | Simulation waveform screenshots. |
+| `LED-PingPong/constr/` | XDC constraints for the Nexys A7-50T board. |
+| `LED-PingPong/vivado/` | Vivado project files. |
+| `LED-PingPong/docs/` | Additional documentation and outputs. |
 
-## Hlavni komponenty
+## Main Components
 
-| Komponenta | Soubor | Uloha v projektu |
+| Component | File | Role in the Project |
 | --- | --- | --- |
-| `PingPong_top` | [LED-PingPong/src/PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd) | Propojeni cele hry, tlacitek, pohybu micku, skore a displeje. |
-| `cnt_d_bd` | [LED-PingPong/src/cnt_d_bd.vhd](LED-PingPong/src/cnt_d_bd.vhd) | Citac pozice micku a generovani LED vystupu. |
-| `cnt_b_bd` | [LED-PingPong/src/cnt_b_bd.vhd](LED-PingPong/src/cnt_b_bd.vhd) | 3bitovy citac nastaveni rychlosti. |
-| `clk_en2` | [LED-PingPong/src/clk_en2.vhd](LED-PingPong/src/clk_en2.vhd) | Nastavitelny clock-enable generator pro rychlost hry. |
-| `clk_en` | [LED-PingPong/src/clk_en.vhd](LED-PingPong/src/clk_en.vhd) | Clock-enable generator pouzity v pomocnych blocich. |
-| `debounce` | [LED-PingPong/src/debounce.vhd](LED-PingPong/src/debounce.vhd) | Odfiltrovani zakmitu tlacitek. |
-| `counter10` | [LED-PingPong/src/counter10.vhd](LED-PingPong/src/counter10.vhd) | Dekadicky citac skore. |
-| `display_driver` | [LED-PingPong/src/display_driver.vhd](LED-PingPong/src/display_driver.vhd) | Multiplex sedmisegmentoveho displeje. |
-| `bin2seg` | [LED-PingPong/src/bin2seg.vhd](LED-PingPong/src/bin2seg.vhd) | Prevod 4bitove hodnoty na segmenty displeje. |
-| `RSFlipFlop` | [LED-PingPong/src/RSFlipFlop.vhd](LED-PingPong/src/RSFlipFlop.vhd) | RS klopny obvod pro uchovani smeru. |
-| `counter` | [LED-PingPong/src/counter.vhd](LED-PingPong/src/counter.vhd) | Obecny citac pouzity v zobrazovacich blocich. |
+| `PingPong_top` | [LED-PingPong/src/PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd) | Connects the complete game: buttons, ball movement, score counters and display output. |
+| `cnt_d_bd` | [LED-PingPong/src/cnt_d_bd.vhd](LED-PingPong/src/cnt_d_bd.vhd) | Ball position counter and LED output generator. |
+| `cnt_b_bd` | [LED-PingPong/src/cnt_b_bd.vhd](LED-PingPong/src/cnt_b_bd.vhd) | 3-bit counter used for speed setting. |
+| `clk_en2` | [LED-PingPong/src/clk_en2.vhd](LED-PingPong/src/clk_en2.vhd) | Adjustable clock-enable generator for game speed. |
+| `clk_en` | [LED-PingPong/src/clk_en.vhd](LED-PingPong/src/clk_en.vhd) | Clock-enable generator used by helper blocks. |
+| `debounce` | [LED-PingPong/src/debounce.vhd](LED-PingPong/src/debounce.vhd) | Removes push-button bouncing. |
+| `counter10` | [LED-PingPong/src/counter10.vhd](LED-PingPong/src/counter10.vhd) | Decimal score counter. |
+| `display_driver` | [LED-PingPong/src/display_driver.vhd](LED-PingPong/src/display_driver.vhd) | Seven-segment display multiplexing. |
+| `bin2seg` | [LED-PingPong/src/bin2seg.vhd](LED-PingPong/src/bin2seg.vhd) | Converts a 4-bit value to seven-segment outputs. |
+| `RSFlipFlop` | [LED-PingPong/src/RSFlipFlop.vhd](LED-PingPong/src/RSFlipFlop.vhd) | RS flip-flop used for storing the ball direction. |
+| `counter` | [LED-PingPong/src/counter.vhd](LED-PingPong/src/counter.vhd) | Generic counter used in display-related blocks. |
 
-## Simulace
+## Simulations
 
-Vsechny simulace jsou soucasti tohoto README. Samostatny soubor se simulacemi uz neni potreba. Obrazky prubehu jsou ulozeny ve slozce [LED-PingPong/sim/img](LED-PingPong/sim/img).
+All simulation results are included directly in this README. A separate simulation document is no longer needed. Waveform screenshots are stored in [LED-PingPong/sim/img](LED-PingPong/sim/img).
 
-### Prehled simulovanych bloku
+### Simulated Blocks Overview
 
-| Simulace | Komponenta | Obrazek | Testbench |
+| Simulation | Component | Screenshot | Testbench |
 | --- | --- | --- | --- |
 | `clk_en` | [clk_en.vhd](LED-PingPong/src/clk_en.vhd) | [clk_en.png](LED-PingPong/sim/img/clk_en.png) | [tb_clk_en.vhd](LED-PingPong/sim/tb_clk_en.vhd) |
 | `cnt_b_bd` | [cnt_b_bd.vhd](LED-PingPong/src/cnt_b_bd.vhd) | [cnt_b_bd_tb.png](LED-PingPong/sim/img/cnt_b_bd_tb.png) | [tb_cnt_b_bd.vhd](LED-PingPong/sim/tb_cnt_b_bd.vhd) |
@@ -77,129 +77,129 @@ Vsechny simulace jsou soucasti tohoto README. Samostatny soubor se simulacemi uz
 | `RSFlipFlop` | [RSFlipFlop.vhd](LED-PingPong/src/RSFlipFlop.vhd) | [RSFlipFlop_sim.png](LED-PingPong/sim/img/RSFlipFlop_sim.png) | - |
 | `PingPong_top` | [PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd) | [TOP_sim.png](LED-PingPong/sim/img/TOP_sim.png) | - |
 
-### Simulace `clk_en`
+### `clk_en` Simulation
 
-Komponenta: [LED-PingPong/src/clk_en.vhd](LED-PingPong/src/clk_en.vhd)  
+Component: [LED-PingPong/src/clk_en.vhd](LED-PingPong/src/clk_en.vhd)<br>
 Testbench: [LED-PingPong/sim/tb_clk_en.vhd](LED-PingPong/sim/tb_clk_en.vhd)
 
-Blok `clk_en` generuje jednocyklovy signal `ce`, ktery se pouziva jako clock enable pro dalsi logiku. Simulace overuje reset, citani vnitrniho citace a vytvoreni kratkeho enable pulzu.
+The `clk_en` block generates a one-clock-cycle `ce` pulse used as a clock enable for other logic. The simulation verifies reset behavior, internal counter operation and generation of the enable pulse.
 
-Overovane chovani:
+Verified behavior:
 
-- po resetu je `ce` v nule
-- `ce` je aktivni pouze jeden takt
-- vnitrni citac se po dosazeni maxima vraci na zacatek
+- after reset, `ce` is cleared
+- `ce` is active for only one clock cycle
+- the internal counter returns to zero after reaching its maximum value
 
 ![clk_en simulation waveform](LED-PingPong/sim/img/clk_en.png)
 
-### Simulace `cnt_b_bd`
+### `cnt_b_bd` Simulation
 
-Komponenta: [LED-PingPong/src/cnt_b_bd.vhd](LED-PingPong/src/cnt_b_bd.vhd)  
+Component: [LED-PingPong/src/cnt_b_bd.vhd](LED-PingPong/src/cnt_b_bd.vhd)<br>
 Testbench: [LED-PingPong/sim/tb_cnt_b_bd.vhd](LED-PingPong/sim/tb_cnt_b_bd.vhd)
 
-Blok `cnt_b_bd` je 3bitovy citac nastaveni rychlosti. Vstupy `count_up` a `count_down` meni hodnotu vystupu `count(2:0)`.
+The `cnt_b_bd` block is a 3-bit speed-setting counter. The `count_up` and `count_down` inputs change the value of the `count(2:0)` output.
 
-Overovane chovani:
+Verified behavior:
 
-- reset nastavi `count` na `000`
-- `count_up` zvysuje hodnotu
-- `count_down` snizuje hodnotu
-- citac se zastavi na mezich `000` a `111`
-- soucasny stisk nahoru a dolu nemeni hodnotu
+- reset sets `count` to `000`
+- `count_up` increments the value
+- `count_down` decrements the value
+- the counter saturates at `000` and `111`
+- simultaneous up and down pulses do not change the value
 
 ![cnt_b_bd simulation waveform](LED-PingPong/sim/img/cnt_b_bd_tb.png)
 
-### Simulace `cnt_d_bd`
+### `cnt_d_bd` Simulation
 
-Komponenta: [LED-PingPong/src/cnt_d_bd.vhd](LED-PingPong/src/cnt_d_bd.vhd)  
+Component: [LED-PingPong/src/cnt_d_bd.vhd](LED-PingPong/src/cnt_d_bd.vhd)<br>
 Testbench: [LED-PingPong/sim/tb_cnt_d_bd.vhd](LED-PingPong/sim/tb_cnt_d_bd.vhd)
 
-Blok `cnt_d_bd` predstavuje pozici micku. Interni pozice je v rozsahu 0 az 19. Pozice 2 az 17 jsou viditelne na LED poli, zatimco pozice 0, 1, 18 a 19 slouzi pro detekci kraje a preteceni.
+The `cnt_d_bd` block represents the ball position. The internal position is counted from 0 to 19. Positions 2 to 17 are visible on the LED field, while positions 0, 1, 18 and 19 are used for edge and overflow detection.
 
-Overovane chovani:
+Verified behavior:
 
-- reset vraci micek do vychozi pozice
-- `step` posune micek o jednu pozici
-- `u_d = '1'` posouva doprava
-- `u_d = '0'` posouva doleva
-- `led(15:0)` zobrazuje aktivni pozici micku
-- `count0`, `count1`, `count2`, `count17`, `count18` a `count19` indikuji krajni stavy
+- reset returns the ball to its initial position
+- `step` moves the ball by one position
+- `u_d = '1'` moves the ball to the right
+- `u_d = '0'` moves the ball to the left
+- `led(15:0)` shows the active ball position
+- `count0`, `count1`, `count2`, `count17`, `count18` and `count19` indicate edge states
 
 ![cnt_d_bd simulation waveform](LED-PingPong/sim/img/cnt_d_bd.png)
 
-### Simulace `display_driver`
+### `display_driver` Simulation
 
-Komponenta: [LED-PingPong/src/display_driver.vhd](LED-PingPong/src/display_driver.vhd)  
+Component: [LED-PingPong/src/display_driver.vhd](LED-PingPong/src/display_driver.vhd)<br>
 Testbench: [LED-PingPong/sim/display_driver_tb.vhd](LED-PingPong/sim/display_driver_tb.vhd)
 
-Blok `display_driver` prijima 32bitova data pro osm pozic displeje a masku aktivnich anod. Simulace overuje multiplex jednotlivych cislic, vystup `seg(6:0)` a vyber aktivni anody `anode(7:0)`.
+The `display_driver` block receives 32-bit display data for eight display positions and an anode enable mask. The simulation verifies digit multiplexing, the `seg(6:0)` output and active anode selection through `anode(7:0)`.
 
-Overovane chovani:
+Verified behavior:
 
-- jednotlive nibbly z `data(31:0)` se postupne zobrazuji na `seg(6:0)`
-- `anode(7:0)` vybere aktivni pozici displeje
-- vypnute anody zustavaji neaktivni
+- individual nibbles from `data(31:0)` are multiplexed to `seg(6:0)`
+- `anode(7:0)` selects the active display position
+- disabled anodes remain inactive
 
 ![display_driver simulation waveform](LED-PingPong/sim/img/display_driver_tb.png)
 
-### Simulace `counter10`
+### `counter10` Simulation
 
-Komponenta: [LED-PingPong/src/counter10.vhd](LED-PingPong/src/counter10.vhd)
+Component: [LED-PingPong/src/counter10.vhd](LED-PingPong/src/counter10.vhd)
 
-Blok `counter10` slouzi jako dekadicky citac skore. Cita hodnoty 0 az 9, pri preteceni se vrati na 0 a aktivuje vystup `c_out` pro navazujici vyssi rad.
+The `counter10` block is a decimal score counter. It counts from 0 to 9, returns to 0 after overflow and activates the `c_out` output for the next digit.
 
-Overovane chovani:
+Verified behavior:
 
-- reset nastavi citac na 0
-- vstup `count` prida jeden bod
-- hodnota se meni v rozsahu 0 az 9
-- po 9 nasleduje 0 a carry vystup `c_out`
+- reset sets the counter to 0
+- the `count` input adds one point
+- the value stays in the range from 0 to 9
+- after 9, the counter returns to 0 and generates `c_out`
 
 ![counter10 simulation waveform](LED-PingPong/sim/img/counter10_tb.png)
 
-### Simulace `RSFlipFlop`
+### `RSFlipFlop` Simulation
 
-Komponenta: [LED-PingPong/src/RSFlipFlop.vhd](LED-PingPong/src/RSFlipFlop.vhd)
+Component: [LED-PingPong/src/RSFlipFlop.vhd](LED-PingPong/src/RSFlipFlop.vhd)
 
-Blok `RSFlipFlop` uchovava stav podle vstupu `S` a `R`. V projektu se pouziva pro pamatovani smeru pohybu micku.
+The `RSFlipFlop` block stores a state according to the `S` and `R` inputs. In the project, it is used to remember the ball direction.
 
-Overovane chovani:
+Verified behavior:
 
-- `S = 1`, `R = 0` nastavi vystup `Q` na 1
-- `S = 0`, `R = 1` nastavi vystup `Q` na 0
-- `S = 0`, `R = 0` zachova predchozi stav
-- neplatny stav `S = 1`, `R = 1` je osetren nulou
+- `S = 1`, `R = 0` sets `Q` to 1
+- `S = 0`, `R = 1` resets `Q` to 0
+- `S = 0`, `R = 0` keeps the previous state
+- invalid state `S = 1`, `R = 1` is handled by resetting the output to 0
 
 ![RSFlipFlop simulation waveform](LED-PingPong/sim/img/RSFlipFlop_sim.png)
 
-### Simulace `PingPong_top`
+### `PingPong_top` Simulation
 
-Komponenta: [LED-PingPong/src/PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd)
+Component: [LED-PingPong/src/PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd)
 
-Top-level simulace overuje propojeni hlavnich bloku hry: debounce vstupu, nastaveni rychlosti, pohyb micku, zmenu smeru, pricitani skore a vystupy pro LED a displej.
+The top-level simulation verifies the connection of the main game blocks: debounced inputs, speed setting, ball movement, direction change, score counting and LED/display outputs.
 
-Overovane chovani:
+Verified behavior:
 
-- reset cele hry
-- pohyb micku pres LED pole
-- reakce na tlacitka leveho a praveho hrace
-- zmena rychlosti pres `btnu` a `btnd`
-- pricitani bodu po preteceni micku
-- priprava dat pro sedmisegmentovy displej
+- reset of the complete game
+- ball movement across the LED field
+- response to the left and right player buttons
+- speed change using `btnu` and `btnd`
+- score increment after ball overflow
+- display data preparation for the seven-segment display
 
 ![PingPong_top simulation waveform](LED-PingPong/sim/img/TOP_sim.png)
 
 ## Constraints
 
-Constraints pro desku Nexys A7-50T jsou v souboru [LED-PingPong/constr/nexys.xdc](LED-PingPong/constr/nexys.xdc). Obsahuji prirazeni pinu pro hodinovy signal, tlacitka, LED a sedmisegmentovy displej.
+Constraints for the Nexys A7-50T board are located in [LED-PingPong/constr/nexys.xdc](LED-PingPong/constr/nexys.xdc). They assign pins for the system clock, push buttons, LEDs and seven-segment display.
 
-## Pouzite nastroje
+## Tools
 
 - Vivado 2025.2
 - VHDL
 - Nexys A7-50T
 
-## Reference
+## References
 
-- Zadani projektu: [VHDL projects 2026](https://github.com/tomas-fryza/vhdl-examples/blob/master/lab8-project/README_2026.md)
+- Project assignment: [VHDL projects 2026](https://github.com/tomas-fryza/vhdl-examples/blob/master/lab8-project/README_2026.md)
 - Digilent Nexys A7 reference manual
