@@ -239,4 +239,4 @@ Constraints for the Nexys A7-50T board are located in [LED-PingPong/constr/nexys
 
 -This image shows project's banner
 
-![Banner] (Banner.png)
+![Banner] (<Banner.png>)
