@@ -234,3 +234,9 @@ Constraints for the Nexys A7-50T board are located in [LED-PingPong/constr/nexys
 
 - Project assignment: [VHDL projects 2026](https://github.com/tomas-fryza/vhdl-examples/blob/master/lab8-project/README_2026.md)
 - Digilent Nexys A7 reference manual
+
+## Banner
+
+-This image shows project's banner
+
+![Banner] (Banner.png)
