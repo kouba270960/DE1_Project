@@ -205,7 +205,16 @@ Verified behavior:
 
 ## Project Statistics
 
-Project statistics are stored in [LED-PingPong/statistics](LED-PingPong/statistics). The screenshots below show the Vivado resource utilization results for the final design. The full text report is available as a separate file: [utilization_report01.txt](LED-PingPong/statistics/utilization_report01.txt).
+Project statistics are stored in [LED-PingPong/statistics](LED-PingPong/statistics). The table below summarizes the main resource utilization after synthesis in Vivado 2025.2 for the `PingPong_top` design on the `xc7a50ticsg324-1L` device. The full text report is available here: [utilization_report01.txt](LED-PingPong/statistics/utilization_report01.txt).
+
+| Resource | Used | Available | Utilization |
+| --- | ---: | ---: | ---: |
+| Slice LUTs | 98 | 32,600 | 0.30% |
+| Slice Registers | 176 | 65,200 | 0.27% |
+| Block RAM Tile | 0 | 75 | 0.00% |
+| DSPs | 0 | 120 | 0.00% |
+| Bonded IOB | 37 | 210 | 17.62% |
+| BUFGCTRL | 1 | 32 | 3.13% |
 
 ![Vivado utilization summary](<LED-PingPong/statistics/Snímek obrazovky 2026-05-06 082726.png>)
 
