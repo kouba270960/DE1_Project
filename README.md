@@ -73,9 +73,9 @@ All simulation results are included directly in this README. A separate simulati
 | `cnt_b_bd` | [cnt_b_bd.vhd](LED-PingPong/src/cnt_b_bd.vhd) | [cnt_b_bd_tb.png](LED-PingPong/sim/img/cnt_b_bd_tb.png) | [tb_cnt_b_bd.vhd](LED-PingPong/sim/tb_cnt_b_bd.vhd) |
 | `cnt_d_bd` | [cnt_d_bd.vhd](LED-PingPong/src/cnt_d_bd.vhd) | [cnt_d_bd.png](LED-PingPong/sim/img/cnt_d_bd.png) | [tb_cnt_d_bd.vhd](LED-PingPong/sim/tb_cnt_d_bd.vhd) |
 | `display_driver` | [display_driver.vhd](LED-PingPong/src/display_driver.vhd) | [display_driver_tb.png](LED-PingPong/sim/img/display_driver_tb.png) | [display_driver_tb.vhd](LED-PingPong/sim/display_driver_tb.vhd) |
-| `counter10` | [counter10.vhd](LED-PingPong/src/counter10.vhd) | [counter10_tb.png](LED-PingPong/sim/img/counter10_tb.png) | - |
-| `RSFlipFlop` | [RSFlipFlop.vhd](LED-PingPong/src/RSFlipFlop.vhd) | [RSFlipFlop_sim.png](LED-PingPong/sim/img/RSFlipFlop_sim.png) | - |
-| `PingPong_top` | [PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd) | [TOP_sim.png](LED-PingPong/sim/img/TOP_sim.png) | - |
+| `counter10` | [counter10.vhd](LED-PingPong/src/counter10.vhd) | [counter10_tb.png](LED-PingPong/sim/img/counter10_tb.png) | [counter10_tb.vhd](LED-PingPong/sim/counter10_tb.vhd) |
+| `RSFlipFlop` | [RSFlipFlop.vhd](LED-PingPong/src/RSFlipFlop.vhd) | [RSFlipFlop_sim.png](LED-PingPong/sim/img/RSFlipFlop_sim.png) | [RSFlipFlop_tb.vhd](LED-PingPong/sim/RSFlipFlop_tb.vhd) |
+| `PingPong_top` | [PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd) | [TOP_sim.png](LED-PingPong/sim/img/TOP_sim.png) | [PingPong_top_tb.vhd](LED-PingPong/sim/PingPong_top_tb.vhd) |
 
 ### `clk_en` Simulation
 
@@ -144,7 +144,8 @@ Verified behavior:
 
 ### `counter10` Simulation
 
-Component: [LED-PingPong/src/counter10.vhd](LED-PingPong/src/counter10.vhd)
+Component: [LED-PingPong/src/counter10.vhd](LED-PingPong/src/counter10.vhd)<br>
+Testbench: [LED-PingPong/sim/counter10_tb.vhd](LED-PingPong/sim/counter10_tb.vhd)
 
 The `counter10` block is a decimal score counter. It counts from 0 to 9, returns to 0 after overflow and activates the `c_out` output for the next digit.
 
@@ -159,7 +160,8 @@ Verified behavior:
 
 ### `RSFlipFlop` Simulation
 
-Component: [LED-PingPong/src/RSFlipFlop.vhd](LED-PingPong/src/RSFlipFlop.vhd)
+Component: [LED-PingPong/src/RSFlipFlop.vhd](LED-PingPong/src/RSFlipFlop.vhd)<br>
+Testbench: [LED-PingPong/sim/RSFlipFlop_tb.vhd](LED-PingPong/sim/RSFlipFlop_tb.vhd)
 
 The `RSFlipFlop` block stores a state according to the `S` and `R` inputs. In the project, it is used to remember the ball direction.
 
@@ -174,7 +176,8 @@ Verified behavior:
 
 ### `PingPong_top` Simulation
 
-Component: [LED-PingPong/src/PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd)
+Component: [LED-PingPong/src/PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd)<br>
+Testbench: [LED-PingPong/sim/PingPong_top_tb.vhd](LED-PingPong/sim/PingPong_top_tb.vhd)
 
 The top-level simulation verifies the connection of the main game blocks: debounced inputs, speed setting, ball movement, direction change, score counting and LED/display outputs.
 
