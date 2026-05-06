@@ -44,6 +44,7 @@ Top-level component: [PingPong_top.vhd](LED-PingPong/src/PingPong_top.vhd)
 | `LED-PingPong/constr/` | XDC constraints for the Nexys A7-50T board. |
 | `LED-PingPong/vivado/` | Vivado project files. |
 | `LED-PingPong/docs/` | Additional documentation and outputs. |
+| `LED-PingPong/statistics/` | Synthesis and implementation statistics. |
 
 ## Main Components
 
@@ -191,6 +192,14 @@ Verified behavior:
 - display data preparation for the seven-segment display
 
 ![PingPong_top simulation waveform](LED-PingPong/sim/img/TOP_sim.png)
+
+## Project Statistics
+
+Project statistics are stored in [LED-PingPong/statistics](LED-PingPong/statistics). The screenshots below show the Vivado resource utilization results for the final design. The full text report is available as a separate file: [utilization_report01.txt](LED-PingPong/statistics/utilization_report01.txt).
+
+![Vivado utilization summary](<LED-PingPong/statistics/Snímek obrazovky 2026-05-06 082726.png>)
+
+![Vivado utilization details](<LED-PingPong/statistics/Snímek obrazovky 2026-05-06 082818.png>)
 
 ## Constraints
 
