@@ -12,7 +12,7 @@ Semester project for the Digital Electronics 1 course. The project implements a 
 
 The game uses 16 onboard LEDs, five push buttons and the seven-segment display. The ball moves across the LED field and its direction changes when the correct player button is pressed at the correct edge position. The ball speed can be changed using `btnu` and `btnd`. The current score and speed setting are displayed on the seven-segment display.
 
-After reset, the game returns to its initial state. The `clk` signal is the main system clock and `btnc` is used as reset. The `clk_en2` block generates movement pulses for the ball and the `cnt_b_bd` block stores the current speed setting.
+After reset, the game returns to its initial state. The `clk` signal is the main system clock and `btnc` is used as reset. The `clk_en2` block generates movement pulses for the ball and the `cnt_b_bd` block stores the current speed setting. The final Vivado project is located in [LED-PingPong/vivado/DE1](LED-PingPong/vivado/DE1).
 
 ## Demo Video
 
@@ -235,8 +235,8 @@ Constraints for the Nexys A7-50T board are located in [LED-PingPong/constr/nexys
 - Project assignment: [VHDL projects 2026](https://github.com/tomas-fryza/vhdl-examples/blob/master/lab8-project/README_2026.md)
 - Digilent Nexys A7 reference manual
 
-## Banner
+## Poster
 
--This image shows project's banner
+The following image shows the project poster/banner.
 
-![Banner] (<Banner.png>)
+![Project poster](Banner.png)
