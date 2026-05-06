@@ -14,6 +14,16 @@ The game uses 16 onboard LEDs, five push buttons and the seven-segment display. 
 
 After reset, the game returns to its initial state. The `clk` signal is the main system clock and `btnc` is used as reset. The `clk_en2` block generates movement pulses for the ball and the `cnt_b_bd` block stores the current speed setting.
 
+## Demo Video
+
+The following video shows the LED Ping-Pong game running on the FPGA board.
+
+<video src="pingPong.mp4" controls width="720">
+  Your browser does not support embedded videos. You can open the video file directly: [pingPong.mp4](pingPong.mp4).
+</video>
+
+[Open demo video](pingPong.mp4)
+
 ## Block Diagram
 
 ![Project block diagram](DE_1.drawio.png)
